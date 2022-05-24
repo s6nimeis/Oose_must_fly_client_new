@@ -1,9 +1,11 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class RestAPIClient {
@@ -50,13 +52,13 @@ public class RestAPIClient {
         register(username, password);
 
     }
-    public static void login (String name, String password) throws IOException{
+    public static void login (String name, String password) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/auth/login" + name).openConnection();
 
         connection.setRequestMethod("POST");
 
-        String postData = "username=" + URLEncoder.encode(name, "UTF-8");
-        postData += "&password=" + URLEncoder.encode(password,"UTF-8");
+        String postData = "username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
+        postData += "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8);
 
 
         connection.setDoOutput(true);
@@ -67,12 +69,48 @@ public class RestAPIClient {
         InputStreamReader rw = new InputStreamReader(connection.getInputStream());
 
 
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 200) {
+            System.out.println("Login was successful");
+        } else if (responseCode == 403) {
+            System.out.println("Invalid credentials");
+        }
+    }
+    public static void register (String name, String password) throws IOException{
+        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/auth/register" + name).openConnection();
+
+        connection.setRequestMethod("POST");
+
+        String postData = "username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
+        postData += "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8);
+
+
+        connection.setDoOutput(true);
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+        wr.write(postData);
+        wr.flush();
+
+        BufferedReader buf = new BufferedReader(new InputStreamReader(
+                (connection.getInputStream())));
+        String output;
+        System.out.println("Output from Server .... \n");
+        while ((output = buf.readLine()) != null) {
+            System.out.println(output);
+        }
+        buf.close();
 
         int responseCode = connection.getResponseCode();
         if(responseCode == 200){
-            System.out.println("Login was successful");
+            System.out.println("registration was successful");
         }
         else if(responseCode == 403){
-            System.out.println("Invalid credentials");
+            System.out.println("User already exists");
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        startUp();
+    }
+
 }
+
