@@ -1,4 +1,9 @@
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Scanner;
 
 public class RestAPIClient {
@@ -45,4 +50,29 @@ public class RestAPIClient {
         register(username, password);
 
     }
+    public static void login (String name, String password) throws IOException{
+        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/auth/login" + name).openConnection();
+
+        connection.setRequestMethod("POST");
+
+        String postData = "username=" + URLEncoder.encode(name, "UTF-8");
+        postData += "&password=" + URLEncoder.encode(password,"UTF-8");
+
+
+        connection.setDoOutput(true);
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+        wr.write(postData);
+        wr.flush();
+
+        InputStreamReader rw = new InputStreamReader(connection.getInputStream());
+
+
+
+        int responseCode = connection.getResponseCode();
+        if(responseCode == 200){
+            System.out.println("Login was successful");
+        }
+        else if(responseCode == 403){
+            System.out.println("Invalid credentials");
+        }
 }
