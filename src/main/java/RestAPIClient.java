@@ -1,14 +1,36 @@
+import netscape.javascript.JSObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class RestAPIClient {
+
+    private static final String MAIN_URL = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api";
+
+    final String url1 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/login";
+    final String url2 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/register";
+    final String url3 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/logout";     //{token}
+
+    final String url4 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/query/offers";
+    final String url5 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/query/values";
+    final String url6 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/"; //{token}/{id}/accept
+
+    final String url7 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; //{token}/inv
+    final String url8 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; //{token}/deposit --> double amount
+    final String url9 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; //{token}/withdraw --> double amount
+    final String url10 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; //{token}/balance
+    final String url11 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; ///{token}/offers/show
+    final String url12 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; ///{token}/offers/delete/{id}
+    final String url13 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; ///{token}/offers/create --> long id, int amount, double price_per_unit
+    final String url14 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; ///{token}/offers/update/{id} --> double new_price_per_unit
+
+    static String data;
+
 
     public static void startUp() throws IOException {
         Scanner scanner = new Scanner(System.in);
@@ -24,88 +46,147 @@ public class RestAPIClient {
             System.out.println("You must have entered wrong keywords. Please try again.");
             startUp();
         }
-        scanner.close();
+
+    }
+    public static void online() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("From here you can choose from the listed options for this marketplace.\n");
+        System.out.println("Just type the name of the option");
+        System.out.println("(1)logout\n");
+        String option = scanner.nextLine();
+        if("logout".equalsIgnoreCase(option)){
+            logout();
+        }
+
     }
     public static void loginaccount() throws IOException {
+        String url = MAIN_URL + "/auth" + "/login";
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter your username");
-        String username = scanner.nextLine();
+        System.out.println("Please enter your Email address");
+        String usermail = scanner.nextLine();
 
         System.out.println("Please enter your password");
         String password = scanner.nextLine();
 
-        login(username, password);
+        String postData = "mail=" + URLEncoder.encode(usermail, StandardCharsets.UTF_8);
+        postData += "&pass=" + URLEncoder.encode(password, StandardCharsets.UTF_8);
 
-        scanner.close();
 
-        System.out.println("Thanks for using ebay_wishcom_not_a_scam_edition");
+        authentication(url, postData);
 
     }
     public static void registeraccount() throws IOException {
+        String url = MAIN_URL + "/auth" + "/register";
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter a username you want to register");
-        String username = scanner.nextLine();
+        System.out.println("Please enter an email address you want to register");
+        String usermail = scanner.nextLine();
 
         System.out.println("Please enter a paswort to set");
         String password = scanner.nextLine();
 
-        register(username, password);
+        String postData = "mail=" + URLEncoder.encode(usermail, StandardCharsets.UTF_8);
+        postData += "&pass=" + URLEncoder.encode(password, StandardCharsets.UTF_8);
+
+        authentication(url, postData);
 
     }
-    public static void login (String name, String password) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/auth/login" + name).openConnection();
-
-        connection.setRequestMethod("POST");
-
-        String postData = "username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
-        postData += "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8);
-
-
-        connection.setDoOutput(true);
-        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-        wr.write(postData);
-        wr.flush();
-
-        InputStreamReader rw = new InputStreamReader(connection.getInputStream());
-
+    public static void logout() throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/logout/"+ data).openConnection();
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
-            System.out.println("Login was successful");
-        } else if (responseCode == 403) {
-            System.out.println("Invalid credentials");
+            System.out.println("Logout was successful");   //wird warum auch immer nicht geprintet
+        } else if (responseCode == 401) {
+            System.out.println("Invalid token");
         }
+
     }
-    public static void register (String name, String password) throws IOException{
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/auth/register" + name).openConnection();
 
+    public static void authentication(String url, String postData) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("POST");
-
-        String postData = "username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
-        postData += "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8);
-
-
         connection.setDoOutput(true);
         OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
         wr.write(postData);
         wr.flush();
 
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while((line = in.readLine()) != null){
+            response.append(line).append("\n");
+        }
+        in.close();
+
+        data = response.toString();
+        System.out.println(data);
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 200) {
+            System.out.println("Request was successful\n");
+            System.out.println("Thanks for using ebay_wishcom_not_a_scam_edition\n");
+            online();
+        }
+        else{
+            System.out.println("Something didnt work as expected.");
+        }
+
+    }
+
+    public static void getoffers() throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/query/offers").openConnection();
+
+        connection.setRequestMethod("GET");
+
         BufferedReader buf = new BufferedReader(new InputStreamReader(
                 (connection.getInputStream())));
+
         String output;
         System.out.println("Output from Server .... \n");
         while ((output = buf.readLine()) != null) {
             System.out.println(output);
         }
         buf.close();
+        connection.disconnect();
 
         int responseCode = connection.getResponseCode();
-        if(responseCode == 200){
-            System.out.println("registration was successful");
+        if (responseCode == 200) {
+            System.out.println("Logout was successful");
+        } else if (responseCode == 401) {
+            System.out.println("Invalid token");
         }
-        else if(responseCode == 403){
-            System.out.println("User already exists");
+
+    }
+
+    public static void post_method (String url, String postData) throws IOException {
+
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+        wr.write(postData);
+        wr.flush();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while((line = in.readLine()) != null){
+            response.append(line).append("\n");
         }
+        in.close();
+
+        response.toString();
+        System.out.println(response);
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 200) {
+            System.out.println("Request was successful");
+        }
+        else{
+            System.out.println("Something didnt work as expected.");
+        }
+
     }
 
     public static void main(String[] args) throws IOException {
