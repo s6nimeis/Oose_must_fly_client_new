@@ -1,5 +1,3 @@
-import netscape.javascript.JSObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,13 +6,9 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class RestAPIClient {
+public class RestAPIClientAuth {
 
     private static final String MAIN_URL = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api";
-
-    final String url1 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/login";
-    final String url2 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/register";
-    final String url3 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/auth/logout";     //{token}
 
     final String url4 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/query/offers";
     final String url5 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/query/values";
@@ -29,7 +23,7 @@ public class RestAPIClient {
     final String url13 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; ///{token}/offers/create --> long id, int amount, double price_per_unit
     final String url14 = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/user/"; ///{token}/offers/update/{id} --> double new_price_per_unit
 
-    static String data;
+    public static String data;
 
 
     public static void startUp() throws IOException {
@@ -133,30 +127,6 @@ public class RestAPIClient {
 
     }
 
-    public static void getoffers() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market/query/offers").openConnection();
-
-        connection.setRequestMethod("GET");
-
-        BufferedReader buf = new BufferedReader(new InputStreamReader(
-                (connection.getInputStream())));
-
-        String output;
-        System.out.println("Output from Server .... \n");
-        while ((output = buf.readLine()) != null) {
-            System.out.println(output);
-        }
-        buf.close();
-        connection.disconnect();
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            System.out.println("Logout was successful");
-        } else if (responseCode == 401) {
-            System.out.println("Invalid token");
-        }
-
-    }
 
     public static void post_method (String url, String postData) throws IOException {
 
