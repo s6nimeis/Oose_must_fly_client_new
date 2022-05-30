@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,17 +33,6 @@ public class RestAPIClientRessource {
         wr.write(postData);
         wr.flush();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line).append("\n");
-        }
-        in.close();
-
-        String result = response.toString();
-        System.out.println(result);
-
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             System.out.println("Success!");
@@ -59,7 +50,7 @@ public class RestAPIClientRessource {
 
     }
 
-    public static void getoffers(String url) throws IOException {
+    public static void getresponse(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
         connection.setRequestMethod("GET");

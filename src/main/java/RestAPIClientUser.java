@@ -16,7 +16,7 @@ public class RestAPIClientUser {
 
     public static void createoffer() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        String url = MAIN_URL + "/user/" + RestAPIClientAuth.data + "/offers" + "/create";
+        String url = MAIN_URL + "/" + RestAPIClientAuth.data + "/offers" + "/create";
         System.out.println("Please type in the id for the product you want to create");
         long id = Long.parseLong(scanner.nextLine());
 
@@ -69,11 +69,11 @@ public class RestAPIClientUser {
 
         String result = response.toString();
         System.out.println(result);
+        connection.disconnect();
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             System.out.println("Request was successful\n");
-            System.out.println("Thanks for using ebay_wishcom_not_a_scam_edition\n");
             RestAPIClientAuth.online();
         } else {
             System.out.println("Something didnt work as expected.");

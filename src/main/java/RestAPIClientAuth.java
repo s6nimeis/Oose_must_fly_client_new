@@ -66,26 +66,26 @@ public class RestAPIClientAuth {
         }
         else if ("offers".equalsIgnoreCase(option)) {
             String url = MAIN_URL + "/market" + "/query" + "/offers";
-            RestAPIClientRessource.getoffers(url);
+            RestAPIClientRessource.getresponse(url);
 
         } else if ("price".equalsIgnoreCase(option)) {
             String url = MAIN_URL + "/market" + "/query" + "/values";
-            RestAPIClientRessource.getoffers(url);
+            RestAPIClientRessource.getresponse(url);
 
         } else if ("accept".equalsIgnoreCase(option)) {
             RestAPIClientRessource.accept_offer();
 
         }else if ("balance".equalsIgnoreCase(option)) {
             String url = MAIN_URL + "/user/" +data + "/balance";
-            RestAPIClientRessource.getoffers(url);
+            RestAPIClientRessource.getresponse(url);
 
         }else if ("user offers".equalsIgnoreCase(option)) {
             String url = MAIN_URL + "/user/" +data + "/offers" + "/show";
-            RestAPIClientRessource.getoffers(url);
+            RestAPIClientRessource.getresponse(url);
         }
         else if ("inventory".equalsIgnoreCase(option)) {
             String url = MAIN_URL + "/user/" +data + "/inv";
-            RestAPIClientRessource.getoffers(url);
+            RestAPIClientRessource.getresponse(url);
         }
         else if ("deposit".equalsIgnoreCase(option)) {
             String url = MAIN_URL + "/user/" +data + "/deposit";  //needs different url
@@ -166,8 +166,8 @@ public class RestAPIClientAuth {
         while((line = in.readLine()) != null){
             response.append(line).append("\n");
         }
-            String something = response.toString();
-            JSONObject obj = new JSONObject(something);
+            String result = response.toString();
+            JSONObject obj = new JSONObject(result);
             String token = obj.getString("token");
 
             System.out.println("Your personal token is: " + token);
@@ -175,6 +175,7 @@ public class RestAPIClientAuth {
         in.close();
 
         data = token;
+
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
