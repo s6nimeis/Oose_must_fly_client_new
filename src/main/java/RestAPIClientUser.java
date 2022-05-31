@@ -59,23 +59,22 @@ public class RestAPIClientUser {
         wr.write(postData);
         wr.flush();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line).append("\n");
-        }
-        in.close();
-
-        String result = response.toString();
-        System.out.println(result);
         connection.disconnect();
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             System.out.println("Request was successful\n");
             RestAPIClientAuth.online();
-        } else {
+        }else if(responseCode == 500){
+            System.out.println("Error on serverside");
+        }
+        else if(responseCode == 401){
+            System.out.println("invalid token");
+        }
+        else if(responseCode == 403){
+            System.out.println("Error precheck failed");
+        }
+        else {
             System.out.println("Something didnt work as expected.");
         }
     }
@@ -86,21 +85,9 @@ public class RestAPIClientUser {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("DELETE");
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line).append("\n");
-        }
-        in.close();
-
-        String result = response.toString();
-        System.out.println(result);
-
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             System.out.println("Request was successful\n");
-            System.out.println("Thanks for using ebay_wishcom_not_a_scam_edition\n");
             RestAPIClientAuth.online();
         }else if(responseCode == 401){
             System.out.println("invalid token");
@@ -109,7 +96,6 @@ public class RestAPIClientUser {
         }else if(responseCode == 404){
             System.out.println("offer not found");
         }
-
         else {
             System.out.println("Something didnt work as expected.");
         }

@@ -36,25 +36,24 @@ public class RestAPIClientRessource {
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             System.out.println("Success!");
-        } else if (responseCode == 401) {
+            RestAPIClientAuth.online();
+        }else if (responseCode == 401) {
             System.out.println("Invalid token");
-        } else if (responseCode == 500) {
+            accept_offer();
+        }else if (responseCode == 500) {
             System.out.println("There has been an error on server side");
         }else if (responseCode == 403) {
             System.out.println("Error precheck has failed");
         }else {
             System.out.println("Something didnt work out as planned");
         }
-        RestAPIClientAuth.online();
-
 
     }
 
-    public static void getresponse(String url) throws IOException {
+    public static String getresponse(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
         connection.setRequestMethod("GET");
-
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder response = new StringBuilder();
@@ -65,17 +64,17 @@ public class RestAPIClientRessource {
         in.close();
 
         String result = response.toString();
-        System.out.println(result);
-        connection.disconnect();
+        // System.out.println(result);
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
             System.out.println("Request was successful");
+            return result;
         } else {
             System.out.println("Something didnt work as expected");
         }
-        RestAPIClientAuth.online();
 
+        return result;
     }
 }
 
