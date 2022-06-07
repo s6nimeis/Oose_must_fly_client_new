@@ -1,5 +1,3 @@
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,24 +12,29 @@ public class RestAPIClientRessource {
 
     private static final String MAIN_URL = "http://localhost:8080/OOSE_Ebay_WishCom_Edition-1.0-SNAPSHOT/api/market";
 
+    /**
+     * method for accepting an offer from the marketplace, asks for paramter (id and amount) and posts data to given url
+     * @throws IOException
+     */
     public static void accept_offer() throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Before you can accept an offer please type in the id of the offer");
-        long id = Long.parseLong(scanner.nextLine());
+        long offer_id = scanner.nextLong();
 
         System.out.println("Please also enter the needed amount");
-        int amount = Integer.parseInt(scanner.nextLine());
+        int amount = scanner.nextInt();
 
-        String postData = "amount=" + URLEncoder.encode(String.valueOf(amount), StandardCharsets.UTF_8);
-
-        String url = MAIN_URL + "/" + RestAPIClientAuth.data + "/" + id + "/accept";
+        String url = MAIN_URL + "/" + RestAPIClientAuth.data + "/" + offer_id + "/accept";
 
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-        wr.write(postData);
+        String amountStr = "amount=" + URLEncoder.encode(String.valueOf(amount), StandardCharsets.UTF_8);;
+        wr.write(amountStr);
         wr.flush();
+
+        connection.disconnect();
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
@@ -50,8 +53,14 @@ public class RestAPIClientRessource {
 
     }
 
+    /**
+     * gets any kind of response for different methods like (offers, prices and inventory)
+     * @param url
+     * @return
+     * @throws IOException
+     */
     public static String getresponse(String url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();  //opens connection to url
 
         connection.setRequestMethod("GET");
 
@@ -64,7 +73,7 @@ public class RestAPIClientRessource {
         in.close();
 
         String result = response.toString();
-        // System.out.println(result);
+
 
         int responseCode = connection.getResponseCode();
         if (responseCode == 200) {
