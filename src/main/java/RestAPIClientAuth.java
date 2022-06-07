@@ -289,6 +289,7 @@ public class RestAPIClientAuth {
 
 
     public static void main(String[] args) throws IOException {
+
         startUp();
     }
 

@@ -42,7 +42,6 @@ public class RestAPIClientRessource {
             RestAPIClientAuth.online();
         }else if (responseCode == 401) {
             System.out.println("Invalid token");
-            accept_offer();
         }else if (responseCode == 500) {
             System.out.println("There has been an error on server side");
         }else if (responseCode == 403) {
